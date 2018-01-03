@@ -72,7 +72,7 @@ public class EditPartyActivity extends AppCompatActivity implements RealmChangeL
             editInfo = new PartyInfo(partyId, "Untitled Party",
                     new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault()).format(new Date()),
                     addressBuilder.toString(),
-                    "",
+                    "http://maps.google.com/maps/api/staticmap?center=48.858235,2.294571&zoom=15&size=640x640&markers=color:red%7C48.858235,2.294571",
                     1);
         }
         final RealmResults<ContributorInfo> partyContributorInfos
