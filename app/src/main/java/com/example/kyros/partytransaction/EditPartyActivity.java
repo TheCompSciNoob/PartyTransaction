@@ -8,8 +8,14 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,10 +35,12 @@ import io.realm.RealmModel;
 import io.realm.RealmObjectChangeListener;
 import io.realm.RealmResults;
 
-public class EditPartyActivity extends AppCompatActivity implements RealmChangeListener<RealmResults<ContributorInfo>> {
+public class EditPartyActivity extends AppCompatActivity {
 
     public static final String GET_PARTY_ID_KEY = "get party id from intent";
     private Realm realm;
+    private PartyInfo editPartyInfo;
+    private TextView partyName, date, location, numAttenders;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +54,7 @@ public class EditPartyActivity extends AppCompatActivity implements RealmChangeL
             userLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         }
         StringBuilder addressBuilder = new StringBuilder("location unavailable");
+        String gMapsURL = "";
         if (userLocation != null) { //set address if the location can be found
             Geocoder geocoder = new Geocoder(this, Locale.getDefault());
             try {
@@ -59,6 +68,9 @@ public class EditPartyActivity extends AppCompatActivity implements RealmChangeL
                         .append(address.getAdminArea()) //state
                         .append(", ")
                         .append(address.getCountryName()); //country
+                gMapsURL = "http://maps.google.com/maps/api/staticmap?center=" + userLocation.getLatitude() +
+                        "," + userLocation.getLongitude() + "&zoom=15&size=720x360&markers=color:red%7C" +
+                        userLocation.getLatitude() + "," + userLocation.getLongitude() + "&focus=false";
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -67,17 +79,45 @@ public class EditPartyActivity extends AppCompatActivity implements RealmChangeL
         //database + retrieve party from party id
         realm = Realm.getDefaultInstance();
         long partyId = getIntent().getLongExtra(GET_PARTY_ID_KEY, 0);
-        PartyInfo editInfo = realm.where(PartyInfo.class).equalTo("id", partyId).findFirst();
-        if (editInfo == null) {
-            editInfo = new PartyInfo(partyId, "Untitled Party",
+        editPartyInfo = realm.where(PartyInfo.class).equalTo("id", partyId).findFirst();
+        if (editPartyInfo == null) {
+            editPartyInfo = new PartyInfo(partyId, "Untitled Party",
                     new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault()).format(new Date()),
-                    addressBuilder.toString(),
-                    "http://maps.google.com/maps/api/staticmap?center=48.858235,2.294571&zoom=15&size=640x640&markers=color:red%7C48.858235,2.294571",
-                    1);
+                    addressBuilder.toString(), gMapsURL,1);
         }
-        final RealmResults<ContributorInfo> partyContributorInfos
-                = realm.where(ContributorInfo.class).equalTo("partyId", partyId).findAllAsync();
-        partyContributorInfos.addChangeListener(this);
+
+        //wireWidgets
+        wireWidgets();
+        updateUI();
+    }
+
+    private void wireWidgets() {
+        //general info
+        partyName = findViewById(R.id.edit_party_name);
+        date = findViewById(R.id.edit_date);
+        location = findViewById(R.id.edit_location);
+        numAttenders = findViewById(R.id.edit_num_attenders);
+        //contributor input
+        RealmResults<ContributorInfo> partyContributorInfos
+                = realm.where(ContributorInfo.class).equalTo("partyId", editPartyInfo.getId()).findAllAsync();
+        RecyclerView contributorInputRecyclerView = findViewById(R.id.contributor_input_recycler_view);
+        contributorInputRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        contributorInputRecyclerView.setAdapter(new ContributorInputAdapter(partyContributorInfos));
+        RecyclerView netChangeRecyclerView = findViewById(R.id.contributors_net_change_recycler_view);
+        netChangeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        //TODO: netChangeRecyclerView.setAdapter();
+        Button addContributorButton = findViewById(R.id.add_contributor_button);
+        addContributorButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(EditPartyActivity.this);
+                //TODO: inflate alert dialog
+            }
+        });
+    }
+
+    private void updateUI() {
+
     }
 
     @Override
@@ -90,10 +130,5 @@ public class EditPartyActivity extends AppCompatActivity implements RealmChangeL
     protected void onStop() {
         realm.close();
         super.onStop();
-    }
-
-    @Override
-    public void onChange(@NonNull RealmResults<ContributorInfo> contributorInfos) {
-
     }
 }

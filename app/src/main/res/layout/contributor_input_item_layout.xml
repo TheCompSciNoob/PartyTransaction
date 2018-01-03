@@ -7,12 +7,11 @@
 
     <TextView
         style="@style/Base.V7.Widget.AppCompat.EditText"
-        android:id="@+id/new_contributor_name"
+        android:id="@+id/contributor_input_name"
         android:layout_weight="2"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_margin="8dp"
-        android:nextFocusRight="@id/new_contributor_amount" />
+        android:layout_margin="8dp" />
 
     <TextView
         android:text="$"
@@ -28,11 +27,10 @@
 
     <TextView
         style="@style/Base.V7.Widget.AppCompat.EditText"
-        android:id="@+id/new_contributor_amount"
+        android:id="@+id/contributor_input_amount"
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:nextFocusDown="@id/new_contributor_name"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"/>

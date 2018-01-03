@@ -52,6 +52,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"/>
+
+                <EditText
+                    android:id="@+id/edit_location"
+                    android:hint="Address"
+                    android:inputType="textCapWords"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"/>
             </LinearLayout>
 
             <TextView
