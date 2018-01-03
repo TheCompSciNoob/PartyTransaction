@@ -11,10 +11,23 @@ public class PartyInfo extends RealmObject {
 
     @PrimaryKey
     private long id;
-    private String partyName, date, address;
+    private String partyName, date, address, gMapsImageURL;
     private int numAttenders;
 
     public PartyInfo() {
+    }
+
+    public PartyInfo(long id, String partyName, String date, String address, String gMapsImageURL, int numAttenders) {
+        this.id = id;
+        this.partyName = partyName;
+        this.date = date;
+        this.address = address;
+        this.gMapsImageURL = gMapsImageURL;
+        this.numAttenders = numAttenders;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public long getId() {
@@ -55,5 +68,13 @@ public class PartyInfo extends RealmObject {
     public PartyInfo setNumAttenders(int numAttenders) {
         this.numAttenders = numAttenders;
         return this;
+    }
+
+    public String getgMapsImageURL() {
+        return gMapsImageURL;
+    }
+
+    public void setgMapsImageURL(String gMapsImageURL) {
+        this.gMapsImageURL = gMapsImageURL;
     }
 }

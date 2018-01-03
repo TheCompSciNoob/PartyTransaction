@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+
+    <TextView
+        style="@style/Base.V7.Widget.AppCompat.EditText"
+        android:id="@+id/new_contributor_name"
+        android:layout_weight="2"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_margin="8dp"
+        android:nextFocusRight="@id/new_contributor_amount" />
+
+    <TextView
+        android:text="$"
+        android:textColor="@android:color/black"
+        android:textAlignment="center"
+        android:gravity="center_vertical"
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"/>
+
+    <TextView
+        style="@style/Base.V7.Widget.AppCompat.EditText"
+        android:id="@+id/new_contributor_amount"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:nextFocusDown="@id/new_contributor_name"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"/>
+
+    <android.support.v7.widget.AppCompatImageButton
+        android:id="@+id/delete_entry_button"
+        android:layout_margin="8dp"
+        android:scaleType="fitCenter"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_delete_black_24dp"
+        android:background="@android:color/transparent" />
+
+</LinearLayout>

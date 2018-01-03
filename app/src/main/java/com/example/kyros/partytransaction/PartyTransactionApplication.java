@@ -18,6 +18,7 @@ public class PartyTransactionApplication extends Application {
         RealmConfiguration configuration = new RealmConfiguration
                 .Builder()
                 .name("partyrealm.realm")
+                .deleteRealmIfMigrationNeeded()
                 .build();
         Realm.setDefaultConfiguration(configuration);
     }

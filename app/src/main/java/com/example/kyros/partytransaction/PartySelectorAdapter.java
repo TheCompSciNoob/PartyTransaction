@@ -3,6 +3,7 @@ package com.example.kyros.partytransaction;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import io.realm.RealmChangeListener;
@@ -25,7 +26,8 @@ public class PartySelectorAdapter extends RecyclerView.Adapter<PartySelectorView
     @Override
     public PartySelectorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        return new PartySelectorViewHolder(inflater.inflate(R.layout.party_selector_item_layout, parent, false));
+        View view = inflater.inflate(R.layout.party_selector_item_layout, parent, false);
+        return new PartySelectorViewHolder(view);
     }
 
     @Override
