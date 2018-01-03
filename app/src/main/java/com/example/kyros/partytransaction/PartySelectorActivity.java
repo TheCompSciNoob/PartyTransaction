@@ -29,32 +29,7 @@ public class PartySelectorActivity extends AppCompatActivity {
     private boolean hasActionModeStarted;
     private Realm realm;
     private RealmList<PartyInfo> deletionList = new RealmList<>();
-    private ActionMode.Callback deleteActionCallbacks = new ActionMode.Callback() {
-
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            menu.add("DELETE");
-            return true;
-        }
-
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;
-        }
-
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            deletionList.deleteAllFromRealm();
-            deletionList.clear();
-            mode.finish();
-            return true;
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            //nothing
-        }
-    };
+    private RealmResults<PartyInfo> displayResults;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,43 +40,13 @@ public class PartySelectorActivity extends AppCompatActivity {
 
         //database
         realm = Realm.getDefaultInstance();
-        final RealmResults<PartyInfo> displayResults = realm.where(PartyInfo.class).findAllAsync();
+        displayResults = realm.where(PartyInfo.class).findAllAsync();
 
         //RecyclerView with database
         RecyclerView partySelectorRecyclerView = findViewById(R.id.party_selector_recycler_view);
         partySelectorRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        final PartySelectorAdapter partySelectorAdapter = new PartySelectorAdapter(displayResults);
+        final PartySelectorAdapter partySelectorAdapter = new PartySelectorAdapter(realm, displayResults);
         partySelectorRecyclerView.setAdapter(partySelectorAdapter);
-        partySelectorRecyclerView
-                .addOnItemTouchListener(new RecyclerViewTouchHandler(partySelectorRecyclerView,
-                        new RecyclerViewTouchHandler.OnRecyclerViewTouchListener() {
-                            @Override
-                            public void onClick(View child, int position) {
-                                if (!hasActionModeStarted) {
-                                    //start edit activity if user did not activate action mode
-                                    Intent editPartyIntent = new Intent(PartySelectorActivity.this, EditPartyActivity.class);
-                                    editPartyIntent.putExtra(EditPartyActivity.GET_PARTY_ID_KEY
-                                            , displayResults.get(position).getId());
-                                    startActivity(editPartyIntent);
-                                } else {
-                                    if (!deletionList.contains(displayResults.get(position))) { //not selected -> select
-                                        deletionList.add(displayResults.get(position));
-                                        child.setBackgroundColor(Color.LTGRAY);
-                                    } else { //already selected -> deselect
-                                        deletionList.remove(displayResults.get(position));
-                                        child.setBackgroundColor(Color.TRANSPARENT);
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onLongClick(View child, int position) {
-                                if (!hasActionModeStarted) {
-                                    hasActionModeStarted = true;
-                                    PartySelectorActivity.this.startSupportActionMode(deleteActionCallbacks);
-                                }
-                            }
-                        }));
 
         //adds party on click
         FloatingActionButton addPartyButton = (FloatingActionButton) findViewById(R.id.add_party_button);
@@ -141,8 +86,20 @@ public class PartySelectorActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        displayResults.removeAllChangeListeners();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         realm.close();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }

@@ -10,11 +10,11 @@ import android.widget.TextView;
 
 public class ContributorNetChangeViewHolder extends RecyclerView.ViewHolder {
 
-    public TextView inputName, inputAmount;
+    public TextView combinedName, combinedAmount;
 
     public ContributorNetChangeViewHolder(View itemView) {
         super(itemView);
-        inputName = itemView.findViewById(R.id.contributor_net_change_name);
-        inputAmount = itemView.findViewById(R.id.contributor_net_change_amount);
+        combinedName = itemView.findViewById(R.id.contributor_net_change_name);
+        combinedAmount = itemView.findViewById(R.id.contributor_net_change_amount);
     }
 }

@@ -1,5 +1,7 @@
 package com.example.kyros.partytransaction;
 
+import java.util.jar.Manifest;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
