@@ -13,17 +13,16 @@ import io.realm.RealmResults;
  * Created by Kyros on 1/3/2018.
  */
 
-public class ContributorNetChangeAdapter extends RecyclerView.Adapter<ContributorNetChangeViewHolder> implements RealmChangeListener<RealmResults<ContributorInfo>> {
+public class ContributorNetChangeAdapter extends RecyclerView.Adapter<ContributorNetChangeViewHolder> {
 
-    private RealmResults<ContributorInfo> rawResults;
+    private RealmLiveData<ContributorInfo> contributorInfoRealmLiveData;
     private RealmList<ContributorInfo> combinedResults;
     private PartyInfo partyInfo;
 
-    public ContributorNetChangeAdapter(RealmResults<ContributorInfo> rawResults, PartyInfo partyInfo) {
+    public ContributorNetChangeAdapter(RealmLiveData<ContributorInfo> contributorInfoRealmLiveData, PartyInfo partyInfo) {
         combinedResults = new RealmList<>();
         this.partyInfo = partyInfo;
-        this.rawResults = rawResults;
-        rawResults.addChangeListener(this);
+        this.contributorInfoRealmLiveData = contributorInfoRealmLiveData;
     }
 
     @Override
@@ -46,19 +45,13 @@ public class ContributorNetChangeAdapter extends RecyclerView.Adapter<Contributo
         return combinedResults.size();
     }
 
-    @Override
-    public void onChange(RealmResults<ContributorInfo> contributorInfos) {
-        combineResults();
-        notifyDataSetChanged();
-    }
-
     public void setCombinedResults(RealmList<ContributorInfo> combinedResults) {
         this.combinedResults = combinedResults;
     }
 
-    private void combineResults() {
+    public void combineResults() {
         RealmList<ContributorInfo> combinedResults = new RealmList<>();
-        for (ContributorInfo rawInfo : rawResults) {
+        for (ContributorInfo rawInfo : contributorInfoRealmLiveData.getValue()) {
             boolean found = false;
             int i = 0;
             while (i < combinedResults.size() && !found) {

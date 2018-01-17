@@ -2,15 +2,15 @@ package com.example.kyros.partytransaction;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.RealmClass;
 
 /**
  * Created by Kyros on 1/2/2018.
  */
 
+@RealmClass
 public class ContributorInfo extends RealmObject {
 
-    @PrimaryKey
-    private long id;
     private long partyId;
     private String name;
     private double amountContributed;
@@ -49,15 +49,6 @@ public class ContributorInfo extends RealmObject {
 
     public ContributorInfo setAmountContributed(double amountContributed) {
         this.amountContributed = amountContributed;
-        return this;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public ContributorInfo setId(long id) {
-        this.id = id;
         return this;
     }
 }

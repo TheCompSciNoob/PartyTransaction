@@ -15,16 +15,14 @@ import io.realm.RealmResults;
  * Created by Kyros on 1/2/2018.
  */
 
-public class ContributorInputAdapter extends RecyclerView.Adapter<ContributorInputViewHolder> implements RealmChangeListener<RealmResults<ContributorInfo>> {
+public class ContributorInputAdapter extends RecyclerView.Adapter<ContributorInputViewHolder> {
 
     private static final String TAG = "ContributorInputAdapter";
-    private RealmResults<ContributorInfo> contributorInputs;
-    private Realm realm;
+    private final RealmLiveData<ContributorInfo> contributorInfoRealmLiveData;
+    private OnDeleteButtonClickListener onDeleteButtonClickListener;
 
-    public ContributorInputAdapter(Realm realm, RealmResults<ContributorInfo> contributorInputs) {
-        this.contributorInputs = contributorInputs;
-        this.realm = realm;
-        contributorInputs.addChangeListener(this);
+    public ContributorInputAdapter(RealmLiveData<ContributorInfo> contributorInfoRealmLiveData) {
+        this.contributorInfoRealmLiveData = contributorInfoRealmLiveData;
     }
 
     @Override
@@ -35,31 +33,35 @@ public class ContributorInputAdapter extends RecyclerView.Adapter<ContributorInp
 
     @Override
     public void onBindViewHolder(ContributorInputViewHolder holder, final int position) {
-        holder.inputName.setText(contributorInputs.get(position).getName());
-        holder.inputAmount.setText(contributorInputs.get(position).getAmountContributed() + "");
+        ContributorInfo contributorInfo = contributorInfoRealmLiveData.getValue().get(position);
+        holder.inputName.setText(contributorInfo.getName());
+        holder.inputAmount.setText(contributorInfo.getAmountContributed() + "");
         holder.deleteEntryButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                realm.beginTransaction();
-                contributorInputs.get(position).deleteFromRealm();
-                realm.commitTransaction();
-                return true;
+                if (onDeleteButtonClickListener != null) {
+                    onDeleteButtonClickListener.onDeleteButtonClicked(position);
+                    return true;
+                }
+                return false;
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        try {
-            return contributorInputs.size();
-        } catch (IllegalStateException e) {
-            Log.e(TAG, "getItemCount: " + e.getMessage(), e);
-            return 0;
-        }
+        return contributorInfoRealmLiveData.getValue().size();
     }
 
-    @Override
-    public void onChange(@NonNull RealmResults<ContributorInfo> contributorInfos) {
-        notifyDataSetChanged();
+    public OnDeleteButtonClickListener getOnDeleteButtonClickListener() {
+        return onDeleteButtonClickListener;
+    }
+
+    public void setOnDeleteButtonClickListener(OnDeleteButtonClickListener onDeleteButtonClickListener) {
+        this.onDeleteButtonClickListener = onDeleteButtonClickListener;
+    }
+
+    public interface OnDeleteButtonClickListener {
+        public void onDeleteButtonClicked(int position);
     }
 }

@@ -4,11 +4,13 @@ import java.util.jar.Manifest;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.RealmClass;
 
 /**
  * Created by Kyros on 12/31/2017.
  */
 
+@RealmClass
 public class PartyInfo extends RealmObject {
 
     @PrimaryKey

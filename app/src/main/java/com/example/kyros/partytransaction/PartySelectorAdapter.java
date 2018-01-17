@@ -1,7 +1,10 @@
 package com.example.kyros.partytransaction;
 
+import android.arch.lifecycle.Observer;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
@@ -24,11 +27,8 @@ import io.realm.RealmResults;
 public class PartySelectorAdapter extends RecyclerView.Adapter<PartySelectorViewHolder> implements RealmChangeListener<RealmResults<PartyInfo>> {
 
     private static final String TAG = "PartySelectorAdapter";
-    private Realm realm;
-    private RealmResults<PartyInfo> displayResults;
-    private RealmList<PartyInfo> deletionList;
-    private boolean hasActionModeStarted;
-    private ActionMode.Callback deleteActionCallbacks = new ActionMode.Callback() {
+    private final RealmLiveData<PartyInfo> displayResults;
+    /*private ActionMode.Callback deleteActionCallbacks = new ActionMode.Callback() {
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -57,13 +57,10 @@ public class PartySelectorAdapter extends RecyclerView.Adapter<PartySelectorView
         public void onDestroyActionMode(ActionMode mode) {
             hasActionModeStarted = false;
         }
-    };
+    };*/
 
-    public PartySelectorAdapter(Realm realm, RealmResults<PartyInfo> displayResults) {
-        deletionList = new RealmList<>();
-        this.realm = realm;
+    public PartySelectorAdapter(RealmLiveData<PartyInfo> displayResults) {
         this.displayResults = displayResults;
-        displayResults.addChangeListener(this);
     }
 
     @Override
@@ -75,11 +72,20 @@ public class PartySelectorAdapter extends RecyclerView.Adapter<PartySelectorView
 
     @Override
     public void onBindViewHolder(final PartySelectorViewHolder holder, final int position) {
-        final PartyInfo partyInfo = displayResults.get(position);
+        final PartyInfo partyInfo = displayResults.getValue().get(position);
         holder.partyName.setText(partyInfo.getPartyName());
         holder.date.setText(partyInfo.getDate());
         holder.address.setText(partyInfo.getAddress());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent editPartyIntent = new Intent(holder.itemView.getContext(), EditPartyActivity.class);
+                editPartyIntent.putExtra(EditPartyActivity.GET_PARTY_ID_KEY
+                        , displayResults.getValue().get(position).getId());
+                holder.itemView.getContext().startActivity(editPartyIntent);
+            }
+        });
+        /*holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!hasActionModeStarted) {
@@ -111,13 +117,13 @@ public class PartySelectorAdapter extends RecyclerView.Adapter<PartySelectorView
                 }
                 return false;
             }
-        });
+        });*/
         //TODO: gmaps location image
     }
 
     @Override
     public int getItemCount() {
-        return displayResults.size();
+        return displayResults.getValue().size();
     }
 
     @Override
